@@ -36,15 +36,16 @@ public class MusicForm {
                 System.exit(0);   //Should probably be a call back to Main class so all the System.exit(0) calls are in one place.
             }
         });
-        addNewRecordButton.addActionListener(new ActionListener() {//TODO open a new JPane similar to movie frm
+        addNewRecordButton.addActionListener(new ActionListener() {
+
+        //TODO open a new JPane similar to movie frm
         });
 
 
         //added music button to play background music
         playMusicButton.addActionListener(new ActionListener() {
             @Override
-            public final void actionPerformed(ActionEvent e) {
-                sound();//supposed to use method sound from Sound class
+            public final void actionPerformed(ActionEvent e) {sound();//supposed to use method sound from Sound class
             }
         });
         staffCatalogButton.addActionListener(new ActionListener() {
