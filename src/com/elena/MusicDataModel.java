@@ -90,7 +90,7 @@ public class MusicDataModel extends AbstractTableModel {
         try {
             newRating = Integer.parseInt(newValue.toString());
 
-            if (newRating < com.elena.MusicDatabase.MOVIE_MIN_RATING || newRating > MusicDatabase.MOVIE_MAX_RATING) {
+            if (newRating < MusicDatabase.MOVIE_MIN_RATING || newRating > MusicDatabase.MOVIE_MAX_RATING) {
                 throw new NumberFormatException("Movie rating must be within the valid range");
             }
         } catch (NumberFormatException ne) {
@@ -113,8 +113,6 @@ public class MusicDataModel extends AbstractTableModel {
         }
 
     }
-
-
     @Override
     //We only want user to be able to edit column 2 - the rating column.
     //If this method always returns true, the whole table will be editable.
