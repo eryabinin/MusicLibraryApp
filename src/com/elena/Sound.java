@@ -9,7 +9,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 //play background music
 public class Sound {
-    public static void sound(){
+
+    public Sound(){
     //music method to play sound file from. https://www.youtube.com/watch?v=VMSTTg5EEnY
     //objects to play music continuously
     AudioPlayer MGP = AudioPlayer.player;

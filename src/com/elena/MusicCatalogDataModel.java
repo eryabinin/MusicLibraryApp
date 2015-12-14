@@ -4,7 +4,8 @@ import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
+//import java.util.Date;
+import java.sql.Date;
 
 public class MusicCatalogDataModel extends AbstractTableModel {
 
@@ -40,7 +41,6 @@ public class MusicCatalogDataModel extends AbstractTableModel {
     private void countRows() {
         rowCount = 0;
         try {
-            //Move cursor to the start...
             resultSet.beforeFirst();
             // next() method moves the cursor forward one row and returns true if there is another row ahead
             while (resultSet.next()) {
@@ -68,7 +68,6 @@ public class MusicCatalogDataModel extends AbstractTableModel {
     @Override
     public Object getValueAt(int row, int col){
         try{
-            //  System.out.println("get value at, row = " +row);
             resultSet.absolute(row+1);
             Object o = resultSet.getObject(col+1);
             return o.toString();
@@ -98,8 +97,14 @@ public class MusicCatalogDataModel extends AbstractTableModel {
     public boolean insertRow(long barcode, String type, String title, String author, String status,
                              double price, Date dueDateStr) {
 
+        //Date dateVal1 = Date.valueOf("2015-12-12");
+
+
         try {
-            //Date now = new Date();
+            String dateNow = "";
+            Date currentDate = Date.valueOf(dateNow);
+            Date dueDate = Date.valueOf(dateNow+21);
+
             //Move to insert row, insert the appropriate data in each column, insert the row, move cursor back to where it was before we started
             resultSet.moveToInsertRow();
             resultSet.updateLong("Barcode", barcode);
@@ -108,8 +113,7 @@ public class MusicCatalogDataModel extends AbstractTableModel {
             resultSet.updateString("Author", author);
             resultSet.updateString("Status", status);
             resultSet.updateDouble("Price", price);
-            //resultSet.updateDate("Due_Date", dueDateStr);
-
+            resultSet.updateDate("Due_Date", dueDate);
             resultSet.insertRow();
             resultSet.moveToCurrentRow();
             fireTableDataChanged();

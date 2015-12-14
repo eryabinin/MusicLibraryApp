@@ -67,7 +67,6 @@ public class MusicUsersDataModel extends AbstractTableModel {
     @Override
     public Object getValueAt(int row, int col){
         try{
-            //  System.out.println("get value at, row = " +row);
             resultSet.absolute(row+1);
             Object o = resultSet.getObject(col+1);
             return o.toString();
@@ -94,21 +93,16 @@ public class MusicUsersDataModel extends AbstractTableModel {
     }
 
     //returns true if successful, false if error occurs
-    public boolean insertRow(long barcode, String type, String title, String author, String status,
-                             double price, Date dueDateStr) {
+    public boolean insertRow(int userID, long userBarcode, String firstName , String lastName, float fines) {
 
         try {
-            //Date now = new Date();
             //Move to insert row, insert the appropriate data in each column, insert the row, move cursor back to where it was before we started
             resultSet.moveToInsertRow();
-            resultSet.updateLong("Barcode", barcode);
-            resultSet.updateString("Type", type);
-            resultSet.updateString("Title", title);
-            resultSet.updateString("Author", author);
-            resultSet.updateString("Status", status);
-            resultSet.updateDouble("Price", price);
-            //resultSet.updateDate("Due_Date", dueDateStr);
-
+            resultSet.updateInt("userID", userID);
+            resultSet.updateLong("userBarcode", userBarcode);
+            resultSet.updateString("firstName", firstName);
+            resultSet.updateString("lastName", lastName);
+            resultSet.updateDouble("fines", fines);
             resultSet.insertRow();
             resultSet.moveToCurrentRow();
             fireTableDataChanged();
