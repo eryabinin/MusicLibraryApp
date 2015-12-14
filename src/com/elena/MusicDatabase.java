@@ -11,9 +11,10 @@ public class MusicDatabase {
     static Connection conn = null;
     static ResultSet rs = null;
 
-    private static MusicDataModel MusicDataModel;
+    public static MusicCatalogDataModel musicCatalogDataModel;
+    public static MusicUsersDataModel musicUsersDataModel;
 
-    /*public static void main(String args[]) {
+    public static void main(String args[]) {
 
         //setup creates database (if it doesn't exist), opens connection, and adds sample data
 
@@ -21,33 +22,49 @@ public class MusicDatabase {
             System.exit(-1);
         }
 
-        if (!loadAllMusic()) {
+        if (!loadAllItems()) {
             System.exit(-1);
         }
 
         //If no errors, then start GUI
-        MusicForm tableGUI = new MusicForm(MusicDataModel);
+        try {
+            MusicFormGUI tableGUI = new MusicFormGUI(musicUsersDataModel);//musicCatalogDataModel);//, musicUsersDataModel);
+        }
+        catch ( Exception ex)
+        {
 
+        }
     }
 
     //Create or recreate a ResultSet containing the whole database, and give it to musicDataModel
-    public static boolean loadAllItems(){
+    public static boolean loadAllItems() {
 
-        try{
+        try {
 
-            if (rs!=null) {
+            if (rs != null) {
                 rs.close();
             }
 
             String getAllData = "SELECT * FROM  CATALOG ";
             rs = statement.executeQuery(getAllData);
 
-            if (MusicDataModel == null) {
+            if (musicCatalogDataModel == null) {
                 //If no current musicDataModel, then make one
-                MusicDataModel = new MusicDataModel(rs);
+                musicCatalogDataModel = new MusicCatalogDataModel(rs);
             } else {
                 //Or, if one already exists, update its ResultSet
-                MusicDataModel.updateResultSet(rs);
+                musicCatalogDataModel.updateResultSet(rs);
+            }
+
+            getAllData = "SELECT * FROM  USERS ";
+            rs = statement.executeQuery(getAllData);
+
+            if (musicUsersDataModel == null) {
+                //If no current musicDataModel, then make one
+                musicUsersDataModel = new MusicUsersDataModel(rs);
+            } else {
+                //Or, if one already exists, update its ResultSet
+                musicUsersDataModel.updateResultSet(rs);
             }
 
             return true;
@@ -59,9 +76,9 @@ public class MusicDatabase {
             return false;
         }
 
-    }*/
+    }
 
-    public static boolean setup(){
+    public static boolean setup() {
         try {
 
             //Load driver class
@@ -74,37 +91,81 @@ public class MusicDatabase {
             }
 
             conn = DriverManager.getConnection(DB_CONNECTION_URL + DB_NAME, USER, PASS);
+
+            // The first argument ResultSet.TYPE_SCROLL_INSENSITIVE
+            // allows us to move the cursor both forward and backwards through the RowSet
+            // we get from this statement.
+
+            // Another option is TYPE_SCROLL_SENSITIVE, which means the ResultSet will be updated when
+            // something *else* changes the database. If your DB server was shared, you might need to be concerned about this.)
+
+            // The TableModel will need to go forward and backward through the ResultSet.
+            // by default, you can only move forward - it's less
+            // resource-intensive than being able to go in both directions.
+            // If you set one argument, you need the other.
+            // The second one (CONCUR_UPDATABLE) means you will be able to change the ResultSet and these
+            // changes will be made to the DB.... so long as you have a table with a primary key in it. (Otherwise
+            // your database isn't able to definitively identify what has been changed).
             statement = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
-            if (!catalogTableExists()) {
-                //Create a table in the database with 8 columns
-                String createTableSQL = "CREATE TABLE IF NOT EXISTS CATALOG (" +
-                        "Barcode long, Type varchar(10),Title varchar(50), Author varchar(50), " +
-                        "Price double,Status varchar(50), Due_Date Date, CusotmerID long))";
+            //Does the table exist? If not, create it.
+            if (!tableExists("catalog")) {
+                //Create a table in the database with 3 columns: Movie title, year and rating
+                String createTableSQL = "CREATE TABLE catalog (" +
+                        "Barcode int, Type varchar(20), Title varchar(50), Author varchar(50), " +
+                        "Price double, Status varchar(50), Due_Date Date, userID long, PRIMARY KEY(Barcode))";
+
+                System.out.println(createTableSQL);
+                //statement.executeUpdate(createTableSQL);
+
+                System.out.println("Created catalog table");
+
+                //adding some data
+                String addDataSQL = "INSERT INTO CATALOG VALUES (4029, 'DVD','Karmen', 'Bize',12.5," +
+                        "'CKO', NOW()+21,'')";
+                statement.executeUpdate(addDataSQL);
+                addDataSQL = "INSERT INTO CATALOG VALUES (4030, 'CD','25', 'Adele',19.99, 'Checked In',0 , 0 )";
+                statement.executeUpdate(addDataSQL);
+                addDataSQL = "INSERT INTO CATALOG VALUES (4031, 'Book','How to start famous and avoid drugs: true story.'," +
+                        " 'Author, Famous',49.99,'Lost', 0 ,'' )";
+                statement.executeUpdate(addDataSQL);
+                addDataSQL = "INSERT INTO CATALOG VALUES (4032,'Audio Tape','Sounds of Ocean', 'Ocean'," +
+                        "15.99,'Damaged', 0, 0)";
+                statement.executeUpdate(addDataSQL);
+                addDataSQL = "INSERT INTO CATALOG VALUES (4033,'CD','Sound of Rain', 'Rain'," +
+                        "5.99,'CKO', 0,0)";
+                statement.executeUpdate(addDataSQL);
+                addDataSQL = "INSERT INTO CATALOG VALUES (4034,'CD','Russian Songs', 'Pugacheva, Alla'," +
+                        "19.99,'Checked In', 0,0)";
+                statement.executeUpdate(addDataSQL);
+            }
+
+            //Does the table exist? If not, create it.
+            if (!tableExists("users")) {
+                String createTableSQL = "CREATE TABLE USERS( userID integer auto_increment primary key, " +
+                        "userBarcode long, firstname varchar(50), lastname varchar(50),fines float)";
+
                 System.out.println(createTableSQL);
                 statement.executeUpdate(createTableSQL);
 
-                System.out.println("Created catalog table");
-                //adding some data
-                String addDataSQL = "INSERT INTO CATALOG VALUES (31972110254029, 'DVD','Karmen', 'Bize',12.5," +
-                        "'CKO', DATE (STR_TO_DATE ('12/28/2015','%m/%d/%Y'), 00257122)";  //DATE(STR_TO_DATE(date_field, '%m/%d/%Y'
+                System.out.println("Created users table");
+                //add some data into users table
+                String addDataSQL = " INSERT INTO USERS (userBarcode, firstname, lastname, fines) values (123456,'Harry', 'Potter', 0.0)";
                 statement.executeUpdate(addDataSQL);
-                String addDataSQL = "INSERT INTO CATALOG VALUES (31972110254030, 'CD','25', 'Adele',19.99, 'Checked In',NULL , NULL )";
+                addDataSQL = " INSERT INTO USERS (userBarcode, firstname, lastname, fines) values (234569,'Bob', 'Sponge', 0.0)";
                 statement.executeUpdate(addDataSQL);
-                String addDataSQL = "INSERT INTO CATALOG VALUES (31972133254029, 'Book','How to start famous and avoid drugs: true story.'," +
-                        " 'Author, Famous',49.99,'Lost', NULL ,NULL )";
+                addDataSQL = " INSERT INTO USERS (userBarcode, firstname, lastname, fines) values (876540,'Peppa', 'Pig', 0.0)";
                 statement.executeUpdate(addDataSQL);
-                String addDataSQL = "INSERT INTO CATALOG VALUES (31972133904029,'Audio Tape','Sounds of Ocean', 'Ocean'," +
-                        "15.99,'Damaged', NULL, NULL')";
+                addDataSQL = " INSERT INTO USERS (userBarcode, firstname, lastname, fines) values (927264,'Cinderella', 'Princess', 0.0)";
                 statement.executeUpdate(addDataSQL);
-                String addDataSQL = "INSERT INTO CATALOG VALUES (31972763904029,'CD','Sound of Rain', 'Rain'," +
-                        "5.99,'CKO', DATE (STR_TO_DATE ('12/31/2015','%m/%d/%Y'), 7654327)";
+                addDataSQL = " INSERT INTO USERS (userBarcode, firstname, lastname, fines) values (131415,'Anna', 'Smith', 0.0)";
                 statement.executeUpdate(addDataSQL);
-                String addDataSQL = "INSERT INTO CATALOG VALUES (31972982888333,'CD','Russian Songs', 'Pugacheva, Alla'" +
-                        "19.99,'Checked In', NULL,NULL)";
+                addDataSQL = " INSERT INTO USERS (userBarcode, firstname, lastname, fines) values (927254,'John', 'Smith', 0.0)";
                 statement.executeUpdate(addDataSQL);
-
+                addDataSQL = " INSERT INTO USERS (userBarcode, firstname, lastname, fines) values (9333264,'George', 'Clooney', 0.0)";
+                statement.executeUpdate(addDataSQL);
             }
+
             return true;
 
         } catch (SQLException se) {
@@ -114,9 +175,9 @@ public class MusicDatabase {
         }
     }
 
-    private static boolean movieTableExists() throws SQLException {
+    private static boolean tableExists(String tableName) throws SQLException {
 
-        String checkTablePresentQuery = "SHOW TABLES LIKE CATALOG";   //Can query the database schema
+        String checkTablePresentQuery = "SHOW TABLES LIKE '" + tableName + "'";   //Can query the database schema
         ResultSet tablesRS = statement.executeQuery(checkTablePresentQuery);
         if (tablesRS.next()) {    //If ResultSet has a next row, it has at least one row... that must be our table
             return true;
@@ -126,7 +187,7 @@ public class MusicDatabase {
     }
 
     //Close the ResultSet, statement and connection, in that order.
-    public static void shutdown() {
+    public static void shutdown(){
         try {
             if (rs != null) {
                 rs.close();
@@ -141,7 +202,7 @@ public class MusicDatabase {
                 statement.close();
                 System.out.println("Statement closed");
             }
-        } catch (SQLException se) {
+        } catch (SQLException se){
             //Closing the connection could throw an exception too
             se.printStackTrace();
         }
@@ -151,12 +212,10 @@ public class MusicDatabase {
                 conn.close();
                 System.out.println("Database connection closed");
             }
-        } catch (SQLException se) {
+        }
+        catch (SQLException se) {
             se.printStackTrace();
         }
     }
-
-
-
 }
 

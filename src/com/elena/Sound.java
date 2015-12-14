@@ -13,12 +13,12 @@ public class Sound {
     //music method to play sound file from. https://www.youtube.com/watch?v=VMSTTg5EEnY
     //objects to play music continuously
     AudioPlayer MGP = AudioPlayer.player;
-    AudioStream BGM;
+    AudioStream BGM;//background music
     AudioData MD;//my data
     ContinuousAudioDataStream loop = null;
     //new BackGroundMusic audio stream
     try {
-        BGM = new AudioStream(new FileInputStream("Kalimba.mp3"));//random file I had in Sample music, TODO find a favorite one
+        BGM = new AudioStream(new FileInputStream("Kalimba.mp3"));//random file I had in Sample music
         MD = BGM.getData(); //get data from file and place into player
         loop = new ContinuousAudioDataStream(MD);
 

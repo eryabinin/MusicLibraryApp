@@ -1,18 +1,17 @@
 package com.elena;
 
-import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
-public class MusicDataModel extends AbstractTableModel {
+public class MusicUsersDataModel extends AbstractTableModel {
 
     private int rowCount = 0;
     private int colCount = 0;
     ResultSet resultSet;
 
-    public MusicDataModel(ResultSet rs) {
+    public MusicUsersDataModel(ResultSet rs) {
         this.resultSet = rs;
         setup();
     }
@@ -79,53 +78,6 @@ public class MusicDataModel extends AbstractTableModel {
         }
     }
 
-    @Override
-    //This is called when user edits an editable cell
-    public void setValueAt(Object newValue, int row, int col) {
-
-        //Make sure newValue is an integer AND that it is in the range of valid ratings
-
-        int newRating;
-
-        try {
-            newRating = Integer.parseInt(newValue.toString());
-
-            if (newRating < MusicDatabase.MOVIE_MIN_RATING || newRating > MusicDatabase.MOVIE_MAX_RATING) {
-                throw new NumberFormatException("Movie rating must be within the valid range");
-            }
-        } catch (NumberFormatException ne) {
-            //Error dialog box. First argument is the parent GUI component, which is only used to center the
-            // dialog box over that component. We don't have a reference to any GUI components here
-            // but are allowed to use null - this means the dialog box will show in the center of your screen.
-            JOptionPane.showMessageDialog(null, "Try entering a number between " + MusicDatabase.MOVIE_MIN_RATING + " " + MusicDatabase.MOVIE_MAX_RATING);
-            //return prevents the following database update code happening...
-            return;
-        }
-
-        //This only happens if the new rating is valid
-        try {
-            resultSet.absolute(row + 1);
-            resultSet.updateInt(MusicDatabase.RATING_COLUMN, newRating);
-            resultSet.updateRow();
-            fireTableDataChanged();
-        } catch (SQLException e) {
-            System.out.println("error changing rating " + e);
-        }
-
-    }
-    @Override
-    //We only want user to be able to edit column 2 - the rating column.
-    //If this method always returns true, the whole table will be editable.
-
-    //TODO how can we avoid using a magic number (if col==3) ) here? This code depends on column 3 being the rating.
-    //This might change if we were to add more data to our table, for example storing names of people who created the review.
-    //TODO To fix: look into table column models, and generate the number columns based on the columns found in the ResultSet.
-    public boolean isCellEditable(int row, int col){
-        if (col == 3) {
-            return true;
-        }
-        return false;
-    }
 
     //Delete row, return true if successful, false otherwise
     public boolean deleteRow(int row){
@@ -143,9 +95,10 @@ public class MusicDataModel extends AbstractTableModel {
 
     //returns true if successful, false if error occurs
     public boolean insertRow(long barcode, String type, String title, String author, String status,
-                             double price, String dueDateStr) {
+                             double price, Date dueDateStr) {
 
         try {
+            //Date now = new Date();
             //Move to insert row, insert the appropriate data in each column, insert the row, move cursor back to where it was before we started
             resultSet.moveToInsertRow();
             resultSet.updateLong("Barcode", barcode);
@@ -154,7 +107,7 @@ public class MusicDataModel extends AbstractTableModel {
             resultSet.updateString("Author", author);
             resultSet.updateString("Status", status);
             resultSet.updateDouble("Price", price);
-            resultSet.updateDate("Due_Date", DATE (STR_TO_DATE (dueDateStr,"%m/%d/%Y")));
+            //resultSet.updateDate("Due_Date", dueDateStr);
 
             resultSet.insertRow();
             resultSet.moveToCurrentRow();
