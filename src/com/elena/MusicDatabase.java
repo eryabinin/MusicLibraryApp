@@ -1,15 +1,29 @@
 package com.elena;
 import java.sql.*;
-//import java.util.Date;
 
-
+// This is code is based on the MovieRatings example provided by Clara. Modified by Elena R.
+//
+// This program is app for librarians to set  music items catalog
+// In future, it can be extended to have a database table - Users and use Users to track items borrowed by users
+// (refer to the comments in code: for creating a Users  table and adding initial records)
+// The current code allows to add and delete records for music items.
+//
+// Each music record contains the following data:
+// item barcode - 10-digit number
+// type - type of music item: CD/DVD/Book/Music notes
+// title of the item
+// author of the item (if does not apply, use 'NA')
+// item price
+// status - Lost/Damaged/new/Check In/Check out
+// userId - set for future features; it will allow to connect catalog items with users borrowing the item
+//
+//
 public class MusicDatabase {
 
     private static String DB_CONNECTION_URL = "jdbc:mysql://localhost:3306/";
-    private static final String DB_NAME = "music_library";
-    private static final String USER = "Elena";   //"Elena"
+    private static final String DB_NAME = "music_library";  // the database name
+    private static final String USER = "Elena";
     private static final String PASS = "belochka2015";
-
 
     static Statement statement = null;
     static Connection conn = null;
@@ -17,25 +31,24 @@ public class MusicDatabase {
 
 
     public static MusicCatalogDataModel musicCatalogDataModel;
-  //  public static MusicUsersDataModel musicUsersDataModel;
+    public static MusicUsersDataModel musicUsersDataModel;  // will be used in future feature with Users table
 
     public static void main(String args[]) {
 
-        //setup creates database (if it doesn't exist), opens connection, and adds sample data
-
+        //creates database (if it doesn't exist), opens connection, and adds sample data
         if (!setup()) {
             System.exit(-1);
         }
 
         if (!loadAllCatalogItems())
-              //  || !loadAllUsersItems())
+              //  || !loadAllUsersItems())   // this code will be used when Users table is added to the app
         {
             System.exit(-1);
         }
 
-        //If no errors, then start GUI
+        //If no errors, start GUI
         try {
-            MusicLibraryForm tableGUI = new MusicLibraryForm(musicCatalogDataModel);//musicCatalogDataModel);//, musicUsersDataModel);
+            MusicLibraryForm tableGUI = new MusicLibraryForm(musicCatalogDataModel); // will use GUI for Catalog table
         }
         catch ( Exception ex)
         {
@@ -44,7 +57,7 @@ public class MusicDatabase {
     }
 
 
-    //Create or recreate a ResultSet containing the whole database, and give it to musicDataModel
+    //Create or recreate a ResultSet containing the Catalog table data, and give it to musicDataModel
     public static boolean loadAllCatalogItems() {
 
         try {
@@ -75,7 +88,7 @@ public class MusicDatabase {
 
     }
 
-    /*
+    /*  ---------------------- this code will be used for future feature with Users table
     //Create or recreate a ResultSet containing the whole database, and give it to musicDataModel
     public static boolean loadAllUsersItems() {
 
@@ -107,7 +120,7 @@ public class MusicDatabase {
 
     }
 
-*/
+----------------------------------------------------------    */
     public static boolean setup() {
         try {
 
@@ -116,7 +129,7 @@ public class MusicDatabase {
                 String Driver = "com.mysql.jdbc.Driver";
                 Class.forName(Driver);
             } catch (ClassNotFoundException cnfe) {
-                System.out.println("No database drivers found. Quitting");
+                System.out.println("No database drivers found. Will exit.");
                 return false;
             }
 
@@ -125,7 +138,8 @@ public class MusicDatabase {
                     ResultSet.CONCUR_UPDATABLE);
 
             if (!tableExists("catalog")) {
-                //Create a table in the database: catalog with barcode as a primary key
+                //Create Catalog table in the database: catalog with barcode as a primary key
+                //Note: userId is set to 0 indicating that no user is associated with this item
                 String createTableSQL = "CREATE TABLE catalog (" +
                         "Barcode int, Type varchar(20), Title varchar(50), Author varchar(50), " +
                         "Price double, Status varchar(50), userID int, PRIMARY KEY(Barcode))";
@@ -134,9 +148,8 @@ public class MusicDatabase {
                 statement.executeUpdate(createTableSQL);
                 System.out.println("Created catalog table");
 
-                //adding some data
-
-                String addDataSQL = "INSERT INTO CATALOG VALUES (1234564029, 'DVD','Karmen', 'Bize', 12.5, 'CKO', 0)";
+                //adding initial data
+                String addDataSQL = "INSERT INTO CATALOG VALUES (1234564029, 'DVD','Karmen', 'Bize', 12.5, 'Checked Out', 0)";
                 statement.executeUpdate(addDataSQL);
 
                 addDataSQL = "INSERT INTO CATALOG VALUES (1234564030, 'CD','25', 'Adele',19.99, 'Checked In', 0 )";
@@ -159,11 +172,11 @@ public class MusicDatabase {
                 statement.executeUpdate(addDataSQL);
 
                 addDataSQL = "INSERT INTO CATALOG VALUES (1234564035,'DVD','Folk Song', 'Italian Folk Band'," +
-                        "26.09,'Checked In', 0)";
+                        "26.09,'New', 0)";
                 statement.executeUpdate(addDataSQL);
             }
 
-/*
+/* ----------------------------------- this code is ready to be used when adding Users feature
             //Create a table in the database: USERS with user_id as a primary key
             if (!tableExists("users")) {
                 String createTableSQL = "CREATE TABLE USERS( userID integer auto_increment primary key, " +
@@ -191,7 +204,7 @@ public class MusicDatabase {
 
 
             }
-            */
+            -----------------------------------------           */
             return true;
 
         } catch (SQLException se) {
@@ -201,6 +214,7 @@ public class MusicDatabase {
         }
     }
 
+    // checks if table already exist
     private static boolean tableExists(String tableName) throws SQLException {
 
         String checkTablePresentQuery = "SHOW TABLES LIKE '" + tableName + "'";

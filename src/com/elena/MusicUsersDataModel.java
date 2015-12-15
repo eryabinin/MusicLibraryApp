@@ -5,6 +5,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
+// this class is to work with the Users table's records: add new records, update, count a number of rows, delete rows
+// this class will be used for future feature with Users table.
+//
+// this code is based on the MovieRatings example provided by Clara. Modified by Elena R.
 public class MusicUsersDataModel extends AbstractTableModel {
 
     private int rowCount = 0;

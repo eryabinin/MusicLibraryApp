@@ -5,6 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
+// this class is to work with the Catalog table's records: add new records, update, count a number of rows, delete rows
+// this code is based on the MovieRatings example provided by Clara. Modified by Elena R.
 public class MusicCatalogDataModel extends AbstractTableModel {
 
     private int rowCount = 0;

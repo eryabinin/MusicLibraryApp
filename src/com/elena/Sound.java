@@ -7,6 +7,8 @@ import sun.audio.ContinuousAudioDataStream;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+
+
 //play background music
 public class Sound {
 
@@ -17,6 +19,7 @@ public class Sound {
     AudioStream BGM;//background music
     AudioData MD;//my data
     ContinuousAudioDataStream loop = null;
+
     //new BackGroundMusic audio stream
     try {
         BGM = new AudioStream(new FileInputStream("hello.wma"));//random file I had in Sample music
