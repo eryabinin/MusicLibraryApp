@@ -17,7 +17,7 @@ import java.sql.*;
 // status - Lost/Damaged/new/Check In/Check out
 // userId - set for future features; it will allow to connect catalog items with users borrowing the item
 //
-//
+//final project
 public class MusicDatabase {
 
     private static String DB_CONNECTION_URL = "jdbc:mysql://localhost:3306/";
