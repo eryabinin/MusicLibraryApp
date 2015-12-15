@@ -1,17 +1,15 @@
 package com.elena;
 
-import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-//import java.util.Date;
-import java.sql.Date;
+import java.util.Date;
 
 public class MusicCatalogDataModel extends AbstractTableModel {
 
     private int rowCount = 0;
     private int colCount = 0;
-    ResultSet resultSet;
+    private ResultSet resultSet;
 
     public MusicCatalogDataModel(ResultSet rs) {
         this.resultSet = rs;
@@ -93,27 +91,21 @@ public class MusicCatalogDataModel extends AbstractTableModel {
         }
     }
 
+
     //returns true if successful, false if error occurs
-    public boolean insertRow(long barcode, String type, String title, String author, String status,
-                             double price, Date dueDateStr) {
-
-        //Date dateVal1 = Date.valueOf("2015-12-12");
-
+    public boolean insertRow(int barcode, String type, String title, String author, String status,
+                             double price, int userID) {
 
         try {
-            String dateNow = "";
-            Date currentDate = Date.valueOf(dateNow);
-            Date dueDate = Date.valueOf(dateNow+21);
-
             //Move to insert row, insert the appropriate data in each column, insert the row, move cursor back to where it was before we started
             resultSet.moveToInsertRow();
-            resultSet.updateLong("Barcode", barcode);
+            resultSet.updateInt("Barcode", barcode);
             resultSet.updateString("Type", type);
             resultSet.updateString("Title", title);
             resultSet.updateString("Author", author);
-            resultSet.updateString("Status", status);
             resultSet.updateDouble("Price", price);
-            resultSet.updateDate("Due_Date", dueDate);
+            resultSet.updateString("Status", status);
+            resultSet.updateInt("UserID", userID);
             resultSet.insertRow();
             resultSet.moveToCurrentRow();
             fireTableDataChanged();

@@ -19,7 +19,7 @@ public class Sound {
     ContinuousAudioDataStream loop = null;
     //new BackGroundMusic audio stream
     try {
-        BGM = new AudioStream(new FileInputStream("Kalimba.mp3"));//random file I had in Sample music
+        BGM = new AudioStream(new FileInputStream("hello.wma"));//random file I had in Sample music
         MD = BGM.getData(); //get data from file and place into player
         loop = new ContinuousAudioDataStream(MD);
 

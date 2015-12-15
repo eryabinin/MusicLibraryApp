@@ -9,7 +9,7 @@ public class MusicUsersDataModel extends AbstractTableModel {
 
     private int rowCount = 0;
     private int colCount = 0;
-    ResultSet resultSet;
+    private ResultSet resultSet;
 
     public MusicUsersDataModel(ResultSet rs) {
         this.resultSet = rs;
@@ -93,7 +93,7 @@ public class MusicUsersDataModel extends AbstractTableModel {
     }
 
     //returns true if successful, false if error occurs
-    public boolean insertRow(int userID, long userBarcode, String firstName , String lastName, float fines) {
+    public boolean insertRow(int userID, int userBarcode, String firstName , String lastName, float fines) {
 
         try {
             //Move to insert row, insert the appropriate data in each column, insert the row, move cursor back to where it was before we started
@@ -102,7 +102,7 @@ public class MusicUsersDataModel extends AbstractTableModel {
             resultSet.updateLong("userBarcode", userBarcode);
             resultSet.updateString("firstName", firstName);
             resultSet.updateString("lastName", lastName);
-            resultSet.updateDouble("fines", fines);
+            resultSet.updateFloat("fines", fines);
             resultSet.insertRow();
             resultSet.moveToCurrentRow();
             fireTableDataChanged();

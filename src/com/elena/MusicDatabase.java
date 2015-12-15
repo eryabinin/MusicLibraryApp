@@ -1,5 +1,8 @@
 package com.elena;
 import java.sql.*;
+//import java.util.Date;
+
+
 public class MusicDatabase {
 
     private static String DB_CONNECTION_URL = "jdbc:mysql://localhost:3306/";
@@ -7,12 +10,14 @@ public class MusicDatabase {
     private static final String USER = "Elena";   //"Elena"
     private static final String PASS = "belochka2015";
 
+
     static Statement statement = null;
     static Connection conn = null;
     static ResultSet rs = null;
 
+
     public static MusicCatalogDataModel musicCatalogDataModel;
-    public static MusicUsersDataModel musicUsersDataModel;
+  //  public static MusicUsersDataModel musicUsersDataModel;
 
     public static void main(String args[]) {
 
@@ -22,13 +27,15 @@ public class MusicDatabase {
             System.exit(-1);
         }
 
-        if (!loadAllItems()) {
+        if (!loadAllCatalogItems())
+              //  || !loadAllUsersItems())
+        {
             System.exit(-1);
         }
 
         //If no errors, then start GUI
         try {
-            MusicLibraryForm tableGUI = new MusicLibraryForm(musicUsersDataModel);//musicCatalogDataModel);//, musicUsersDataModel);
+            MusicLibraryForm tableGUI = new MusicLibraryForm(musicCatalogDataModel);//musicCatalogDataModel);//, musicUsersDataModel);
         }
         catch ( Exception ex)
         {
@@ -36,8 +43,9 @@ public class MusicDatabase {
         }
     }
 
+
     //Create or recreate a ResultSet containing the whole database, and give it to musicDataModel
-    public static boolean loadAllItems() {
+    public static boolean loadAllCatalogItems() {
 
         try {
 
@@ -45,7 +53,7 @@ public class MusicDatabase {
                 rs.close();
             }
 
-            String getAllData = "SELECT * FROM  CATALOG ";
+            String getAllData = "SELECT * FROM  CATALOG";
             rs = statement.executeQuery(getAllData);
 
             if (musicCatalogDataModel == null) {
@@ -56,7 +64,28 @@ public class MusicDatabase {
                 musicCatalogDataModel.updateResultSet(rs);
             }
 
-            getAllData = "SELECT * FROM  USERS ";
+            return true;
+
+        } catch (Exception e) {
+            System.out.println("Error loading or reloading items.");
+            System.out.println(e);
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
+    /*
+    //Create or recreate a ResultSet containing the whole database, and give it to musicDataModel
+    public static boolean loadAllUsersItems() {
+
+        try {
+
+            if (rs != null) {
+                rs.close();
+            }
+
+            String getAllData = "SELECT * FROM  USERS";
             rs = statement.executeQuery(getAllData);
 
             if (musicUsersDataModel == null) {
@@ -78,6 +107,7 @@ public class MusicDatabase {
 
     }
 
+*/
     public static boolean setup() {
         try {
 
@@ -98,7 +128,7 @@ public class MusicDatabase {
                 //Create a table in the database: catalog with barcode as a primary key
                 String createTableSQL = "CREATE TABLE catalog (" +
                         "Barcode int, Type varchar(20), Title varchar(50), Author varchar(50), " +
-                        "Price double, Status varchar(50), Due_Date Date, userID long, PRIMARY KEY(Barcode))";
+                        "Price double, Status varchar(50), userID int, PRIMARY KEY(Barcode))";
 
                 System.out.println(createTableSQL);
                 statement.executeUpdate(createTableSQL);
@@ -106,33 +136,35 @@ public class MusicDatabase {
 
                 //adding some data
 
-                String dateNow = "";
-                Date currentDate = Date.valueOf(dateNow);
-                Date dueDate = Date.valueOf(dateNow+21);
-
-                String addDataSQL = "INSERT INTO CATALOG VALUES (4029, 'DVD','Karmen', 'Bize',12.5," +
-                        "'CKO', null, null)";  //DATE(STR_TO_DATE(date_field, '%m/%d/%Y'
-                statement.executeUpdate(addDataSQL);
-                addDataSQL = "INSERT INTO CATALOG VALUES (4030, 'CD','25', 'Adele',19.99, 'Checked In',0 , NULL )";
-                statement.executeUpdate(addDataSQL);
-                addDataSQL = "INSERT INTO CATALOG VALUES (4031, 'Book','How to start famous and avoid drugs: true story.'," +
-                        " 'Author, Famous',49.99,'Lost', NULL ,NULL )";
-                statement.executeUpdate(addDataSQL);
-                addDataSQL = "INSERT INTO CATALOG VALUES (4032,'Audio Tape','Sounds of Ocean', 'Ocean'," +
-                        "15.99,'Damaged', NULL, NULL)";
-                statement.executeUpdate(addDataSQL);
-                addDataSQL = "INSERT INTO CATALOG VALUES (4033,'CD','Sound of Rain', 'Rain'," +
-                        "5.99,'CKO', NULL,NULL)";
-                statement.executeUpdate(addDataSQL);
-                addDataSQL = "INSERT INTO CATALOG VALUES (4034,'CD','Russian Songs', 'Pugacheva, Alla'," +
-                        "19.99,'Checked In', NULL,NULL)";
+                String addDataSQL = "INSERT INTO CATALOG VALUES (1234564029, 'DVD','Karmen', 'Bize', 12.5, 'CKO', 0)";
                 statement.executeUpdate(addDataSQL);
 
-                addDataSQL = "INSERT INTO CATALOG VALUES (4035,'DVD','Folk Song', 'Italian Folk Band'," +
-                        "26.09,'Checked In', dueDate,131415)";
+                addDataSQL = "INSERT INTO CATALOG VALUES (1234564030, 'CD','25', 'Adele',19.99, 'Checked In', 0 )";
+                statement.executeUpdate(addDataSQL);
+
+                addDataSQL = "INSERT INTO CATALOG VALUES (1234564031, 'Book','How to start famous.'," +
+                        " 'Author, Famous', 49.99,'Lost', 0 )";
+                statement.executeUpdate(addDataSQL);
+
+                addDataSQL = "INSERT INTO CATALOG VALUES (1234564032,'Audio Tape','Sounds of Ocean', 'Ocean'," +
+                        "15.99,'Damaged', 0)";
+                statement.executeUpdate(addDataSQL);
+
+                addDataSQL = "INSERT INTO CATALOG VALUES (1234564033,'CD','Sound of Rain', 'Rain'," +
+                        "5.99,'CKO', 0)";
+                statement.executeUpdate(addDataSQL);
+
+                addDataSQL = "INSERT INTO CATALOG VALUES (1234564034,'CD','Russian Songs', 'Pugacheva, Alla'," +
+                        "19.99,'Checked In', 0)";
+                statement.executeUpdate(addDataSQL);
+
+                addDataSQL = "INSERT INTO CATALOG VALUES (1234564035,'DVD','Folk Song', 'Italian Folk Band'," +
+                        "26.09,'Checked In', 0)";
                 statement.executeUpdate(addDataSQL);
             }
-            //Create a table in the database: users with user_id as a primary key
+
+/*
+            //Create a table in the database: USERS with user_id as a primary key
             if (!tableExists("users")) {
                 String createTableSQL = "CREATE TABLE USERS( userID integer auto_increment primary key, " +
                         "userBarcode long, firstname varchar(50), lastname varchar(50),fines float)";
@@ -146,7 +178,7 @@ public class MusicDatabase {
                 statement.executeUpdate(addDataSQL);
                 addDataSQL = " INSERT INTO USERS (userBarcode, firstname, lastname, fines) values (234569,'Bob', 'Sponge', 0.0)";
                 statement.executeUpdate(addDataSQL);
-                addDataSQL = " INSERT INTO USERS (userBarcode, firstname, lastname, fines) values (876540,'Peppa', 'Pig', 0.0)";
+                addDataSQL = " INSERT INTO USERS (userBarcode, firstname, lastname, fines) values (876540,'Peppa', 'Pig', 50.00)";
                 statement.executeUpdate(addDataSQL);
                 addDataSQL = " INSERT INTO USERS (userBarcode, firstname, lastname, fines) values (927264,'Cinderella', 'Princess', 0.0)";
                 statement.executeUpdate(addDataSQL);
@@ -156,8 +188,10 @@ public class MusicDatabase {
                 statement.executeUpdate(addDataSQL);
                 addDataSQL = " INSERT INTO USERS (userBarcode, firstname, lastname, fines) values (9333264,'George', 'Clooney', 0.0)";
                 statement.executeUpdate(addDataSQL);
-            }
 
+
+            }
+            */
             return true;
 
         } catch (SQLException se) {
